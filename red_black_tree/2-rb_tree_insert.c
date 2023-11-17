@@ -3,7 +3,7 @@
 #define UNCLE_COLOR(f) ((f).uncle ? (f).uncle->color : BLACK)
 
 static rb_tree_t
-*bst_insert(rb_tree_t *root, rb_tree_t *parent, int value, rb_tree_t **node);
+*bst_insert(rb_tree_t **root, int value);
 
 static void
 fix_insert(rb_tree_t **root, rb_tree_t *node);
@@ -28,37 +28,56 @@ rb_tree_t
 	if (!tree)
 		return (NULL);
 
-	if (!*tree)
-	{
-		*tree = rb_tree_node(NULL, value, BLACK);
-		return (*tree);
-	}
+	new_node = bst_insert(tree, value);
 
-	bst_insert(*tree, NULL, value, &new_node);
-
-	if (new_node)
+	if (new_node && new_node->color == RED)
 		fix_insert(tree, new_node);
 
 	return (new_node);
 }
 
 static rb_tree_t
-*bst_insert(rb_tree_t *root, rb_tree_t *parent, int value, rb_tree_t **node)
+*bst_insert(rb_tree_t **root, int value)
 {
-	if (!root)
+	rb_tree_t *pos = NULL, *new_node = NULL;
+
+	if (!(pos = *root))
 	{
-		*node = rb_tree_node(parent, value, RED);
-		return (*node);
+		*root = rb_tree_node(NULL, value, BLACK);
+		return (*root);
 	}
 
-	if (value < root->n)
-		root->left = bst_insert(root->left, root, value, node);
-	else if (value > root->n)
-		root->right = bst_insert(root->right, root, value, node);
-	else
-		*node = NULL;
+	while (pos)
+	{
+		if (value < pos->n)
+		{
+			if (!pos->left)
+			{
+				new_node = rb_tree_node(pos, value, RED);
+				pos->left = new_node;
+				break;
+			}
 
-	return (root);
+			pos = pos->left;
+		}
+		else if (value > pos->n)
+		{
+			if (!pos->right)
+			{
+				new_node = rb_tree_node(pos, value, RED);
+				pos->right = new_node;
+				break;
+			}
+
+			pos = pos->right;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	return (new_node);
 }
 
 static void
