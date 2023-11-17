@@ -52,4 +52,4 @@ void get_family(rb_node_family *dest, rb_tree_t *node);
 void rotate_left(rb_tree_t **root, rb_tree_t *node);
 void rotate_right(rb_tree_t **root, rb_tree_t *node);
 
-#endif // SYSTEMALGORITHMS_RBTREES_H
+#endif /* SYSTEMALGORITHMS_RBTREES_H */
