@@ -3,30 +3,22 @@
 #include "graphs.h"
 
 /**
- * dfs_ctx_s - Depth-first traversal context
- *
- * @stack: Stack of vertices/depths
- * @flip_stack: Intermediary stack used to push edge dests in opposite order
- * @visited: Array of visited flags corresponding to vertex indices
- * @top: Top index of `stack` 
- */
-typedef struct dfs_ctx_s
-{
-	vertex_tracker_t *stack;
-	vertex_t **flip_stack;
-	unsigned char *visited;
-	long top;
-} dfs_ctx_t;
-
-/**
  * dfs_ctx_create - Creates depth-first traversal context
  *
- * @nb_vertices: Number of vertices in graph
+ * @n: Number of vertices in graph
  *
  * Return: Pointer to allocated dfs_ctx_t structure
  */
 static dfs_ctx_t
-*dfs_ctx_create(size_t nb_vertices);
+*dfs_ctx_create(size_t n);
+
+/**
+ * dfs_ctx_delete - Frees dfs_ctx_t resources
+ *
+ * @ctx: Pointer to dfs_ctx_t structure
+ */
+static void
+dfs_ctx_delete(dfs_ctx_t *ctx);
 
 /**
  * dfs_ctx_pop_vertex - Pops vertex from stack
@@ -47,6 +39,16 @@ static vertex_tracker_t
  */
 static void
 dfs_ctx_push_edges(dfs_ctx_t *ctx, vertex_tracker_t *vertex);
+
+/**
+ * dfs_ctx_extend_stack - Extends dfs_ctx_t stack capacity
+ *
+ * @ctx: Pointer to context structure
+ *
+ * Return: `ctx` if successful, otherwise NULL
+ */
+static dfs_ctx_t
+*dfs_ctx_extend_stack(dfs_ctx_t *ctx);
 
 /**
  * depth_first_traverse - Acts on all graph vertices (depth-first order)
@@ -73,12 +75,15 @@ depth_first_traverse(const graph_t *graph, action_t action)
 
 	/* Push first vertex */
 	ctx->stack[++ctx->top].v = graph->vertices;
-	ctx->stack[ctx->top].d = 0;
 
 	while (ctx->top > -1)
 	{
-		if (!dfs_ctx_pop_vertex(ctx, &pos))
-			break;
+		dfs_ctx_pop_vertex(ctx, &pos);
+
+		if (ctx->visited[pos.v->index])
+			continue;
+
+		ctx->visited[pos.v->index] = 1;
 
 		if (pos.d > max_depth)
 			max_depth = pos.d;
@@ -87,14 +92,14 @@ depth_first_traverse(const graph_t *graph, action_t action)
 		dfs_ctx_push_edges(ctx, &pos);
 	}
 
-	free(ctx);
+	dfs_ctx_delete(ctx);
 	return (max_depth);
 }
 
 /**
  * dfs_ctx_create - Creates depth-first traversal context
  *
- * @nb_vertices: Number of vertices in graph
+ * @n: Number of vertices in graph
  *
  * Return: Pointer to allocated dfs_ctx_t structure
  */
@@ -102,28 +107,46 @@ static dfs_ctx_t
 *dfs_ctx_create(size_t n)
 {
 	dfs_ctx_t *ctx = NULL;
-	size_t block_size;
+	vertex_tracker_t *stack = NULL;
+	vertex_t **flip_stack = NULL;
+	unsigned char *visited = NULL;
 
-	/* Space for the dfs_ctx_t struct itself */
-	block_size = sizeof(dfs_ctx_t);
-	/* Space for stack */
-	block_size += n * sizeof(vertex_tracker_t);
-	/* Space for flip stack */
-	block_size += n * sizeof(vertex_t *);
-	/* Space for visited flags */
-	block_size += n * sizeof(unsigned char);
+	ctx = calloc(1, sizeof(dfs_ctx_t));
+	stack = calloc(n, sizeof(vertex_tracker_t));
+	flip_stack = calloc(n, sizeof(vertex_t *));
+	visited = calloc(n, sizeof(unsigned char));
 
-	ctx = calloc(1, block_size);
+	if (!ctx || !stack || !flip_stack || !visited)
+		goto alloc_fail;
 
-	if (!ctx)
-		return (NULL);
-
-	ctx->stack = (vertex_tracker_t *)(ctx + 1);
-	ctx->flip_stack = (vertex_t **)(ctx->stack + n);
-	ctx->visited = (unsigned char *)(ctx->flip_stack + n);
+	ctx->stack = stack;
+	ctx->flip_stack = flip_stack;
+	ctx->visited = visited;
 	ctx->top = -1;
+	ctx->stack_capacity = (long)n;
 
 	return (ctx);
+
+alloc_fail:
+	free(ctx);
+	free(stack);
+	free(flip_stack);
+	free(visited);
+	return (NULL);
+}
+
+/**
+ * dfs_ctx_delete - Frees dfs_ctx_t resources
+ *
+ * @ctx: Pointer to dfs_ctx_t structure
+ */
+static void
+dfs_ctx_delete(dfs_ctx_t *ctx)
+{
+	free(ctx->stack);
+	free(ctx->flip_stack);
+	free(ctx->visited);
+	free(ctx);
 }
 
 /**
@@ -137,15 +160,10 @@ static dfs_ctx_t
 static vertex_tracker_t
 *dfs_ctx_pop_vertex(dfs_ctx_t *ctx, vertex_tracker_t *dest)
 {
-	while (ctx->top >= 0 && ctx->visited[ctx->stack[ctx->top].v->index])
-		--ctx->top;
-
 	if (ctx->top < 0)
 		return (NULL);
 
 	memcpy(dest, ctx->stack + ctx->top--, sizeof(vertex_tracker_t));
-
-	ctx->visited[dest->v->index] = 1;
 	return (dest);
 }
 
@@ -167,10 +185,38 @@ dfs_ctx_push_edges(dfs_ctx_t *ctx, vertex_tracker_t *vertex)
 			ctx->flip_stack[++flip_top] = pos->dest;
 	}
 
+	if ((ctx->top + flip_top + 1) >= ctx->stack_capacity)
+		dfs_ctx_extend_stack(ctx);
+
 	while (flip_top > -1)
 	{
 		++ctx->top;
 		ctx->stack[ctx->top].v = ctx->flip_stack[flip_top--];
 		ctx->stack[ctx->top].d = vertex->d + 1;
 	}
+}
+
+/**
+ * dfs_ctx_extend_stack - Extends dfs_ctx_t stack capacity
+ *
+ * @ctx: Pointer to context structure
+ *
+ * Return: `ctx` if successful, otherwise NULL
+ */
+static dfs_ctx_t
+*dfs_ctx_extend_stack(dfs_ctx_t *ctx)
+{
+	vertex_tracker_t *stack = NULL;
+
+	stack = realloc(
+		ctx->stack,
+		((size_t)ctx->stack_capacity * 2) * sizeof(vertex_tracker_t)
+	);
+
+	if (!stack)
+		return (NULL);
+
+	ctx->stack = stack;
+	ctx->stack_capacity *= 2;
+	return (ctx);
 }

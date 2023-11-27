@@ -45,8 +45,7 @@ delete_vertices(vertex_t *vertex_list)
 	if (!vertex_list)
 		return;
 
-	do
-	{
+	do {
 		tmp = vertex_list;
 		vertex_list = vertex_list->next;
 		delete_edges(tmp->edges);
@@ -67,8 +66,7 @@ delete_edges(edge_t *edge_list)
 	if (!edge_list)
 		return;
 
-	do
-	{
+	do {
 		tmp = edge_list;
 		edge_list = edge_list->next;
 		free(tmp);

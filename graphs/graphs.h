@@ -68,6 +68,21 @@ typedef struct graph_s
 typedef void (*action_t)(const vertex_t *v, size_t depth);
 
 /**
+ * struct vertex_search_ctx_s - Vertex search context (src/dest)
+ *
+ * @src_key: Source vertex key to find
+ * @dest_key: Destination vertex key to find
+ * @vertex_list: Head of vertex linked list
+ * @src: Source vertex pointer (set when found)
+ * @dest: Destination vertex pointer (set when found)
+ */
+typedef struct vertex_search_ctx_s
+{
+	const char *src_key, *dest_key;
+	vertex_t *vertex_list, *src, *dest;
+} vertex_search_ctx_t;
+
+/**
  * vertex_tracker_s - Composite struct for tracking visited vertices
  *
  * @vertex: Pointer to vertex structure
@@ -78,6 +93,22 @@ typedef struct vertex_tracker_s
 	vertex_t *v;
 	size_t d;
 } vertex_tracker_t;
+
+/**
+ * dfs_ctx_s - Depth-first traversal context
+ *
+ * @stack: Stack of vertices/depths
+ * @flip_stack: Intermediary stack used to push edge dests in opposite order
+ * @visited: Array of visited flags corresponding to vertex indices
+ * @top: Top index of `stack` 
+ */
+typedef struct dfs_ctx_s
+{
+	vertex_tracker_t *stack;
+	vertex_t **flip_stack;
+	unsigned char *visited;
+	long stack_capacity, top;
+} dfs_ctx_t;
 
 /**
  * graph_create - Graph-structure allocation function
