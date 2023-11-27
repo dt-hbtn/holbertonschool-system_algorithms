@@ -65,6 +65,20 @@ typedef struct graph_s
 	vertex_t *vertices;
 } graph_t;
 
+typedef void (*action_t)(const vertex_t *v, size_t depth);
+
+/**
+ * vertex_tracker_s - Composite struct for tracking visited vertices
+ *
+ * @vertex: Pointer to vertex structure
+ * @depth: Depth of vertex
+ */
+typedef struct vertex_tracker_s
+{
+	vertex_t *v;
+	size_t d;
+} vertex_tracker_t;
+
 /**
  * graph_create - Graph-structure allocation function
  *
@@ -117,8 +131,7 @@ graph_delete(graph_t *graph);
  * Return: The greatest vertex depth or 0UL on failure
  */
 size_t
-depth_first_traverse(const graph_t *graph,
-	void (*action)(const vertex_t *v, size_t depth));
+depth_first_traverse(const graph_t *graph, action_t action);
 
 /**
  * breadth_first_traverse - Acts on all graph vertices (breadth-first order)
@@ -129,8 +142,7 @@ depth_first_traverse(const graph_t *graph,
  * Return: The greatest vertex depth or 0UL on failure
  */
 size_t
-breadth_first_traverse(const graph_t *graph,
-	void (*action)(const vertex_t *v, size_t depth));
+breadth_first_traverse(const graph_t *graph, action_t action);
 
 /**
  * graph_display - Utility function to display the adjacency linked list
