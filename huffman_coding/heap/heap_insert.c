@@ -85,7 +85,7 @@ static binary_tree_node_t
 	void *tmp_data = NULL;
 
 	/* continue while parent's data is greater than node's data */
-	while (parent && heap->data_cmp(parent, node) > 1)
+	while (parent && heap->data_cmp(parent, node) > 0)
 	{
 		/* swap node/parent data */
 		tmp_data = parent->data;
