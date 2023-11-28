@@ -39,6 +39,15 @@ void
 	/* replace root's data with data from last node in heap */
 	last_node = get_last_node(heap);
 	heap->root->data = last_node->data;
+
+	if (last_node->parent)
+	{
+		if (heap->size & 1)
+			last_node->parent->right = NULL;
+		else
+			last_node->parent->left = NULL;
+	}
+
 	free(last_node);
 
 	/* decrement heap size and heapify downward */
