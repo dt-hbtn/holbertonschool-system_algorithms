@@ -53,13 +53,15 @@ static binary_tree_node_t
 *get_parent_of_new(const heap_t *heap)
 {
 	binary_tree_node_t *pos = NULL;
-	size_t mask;
+	size_t new_size, mask;
 
+	/* size + 1 because we want the parent of the NEW node */
+	new_size = heap->size + 1;
 	/* 2^63 on a 64-bit system */
 	mask = 1UL << ((sizeof(size_t) * 8) - 1);
 
 	/* find value of most-significant bit */
-	while (!(heap->size & mask))
+	while (!(new_size & mask))
 		mask >>= 1;
 
 	pos = heap->root;
@@ -70,7 +72,7 @@ static binary_tree_node_t
 	{
 		/* bit is set -> right child */
 		/* bit is not set -> left child */
-		pos = (heap->size & mask) ? pos->right : pos->left;
+		pos = (new_size & mask) ? pos->right : pos->left;
 	}
 
 	return (pos);
