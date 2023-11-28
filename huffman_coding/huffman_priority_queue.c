@@ -77,7 +77,7 @@ on_failure:
  * @a: Pointer to first node
  * @b: Pointer to second node
  *
- * Return: 0 if equal, <0 if less-than, >0 if greater-than
+ * Return: 0: a == b, negative: a < b, positive: a > b
  */
 int
 cmp_nested_nodes(void *a, void *b)

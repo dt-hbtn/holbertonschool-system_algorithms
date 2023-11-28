@@ -109,7 +109,7 @@ heapify_down(heap_t *heap)
 	parent = heap->root;
 	child = min_child(heap, parent);
 
-	while (child && heap->data_cmp(parent->data, child->data) > 0)
+	while (child && heap->data_cmp(parent->data, child->data) >= 0)
 	{
 		/* swap parent/child data */
 		tmp_data = parent->data;
