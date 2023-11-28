@@ -7,7 +7,7 @@ heap_delete(heap_t *heap, free_data_t free_data)
 	binary_tree_node_t **stack = NULL, *pos = NULL;
 	long top = -1;
 
-	if (!heap || !heap->root)
+	if (!heap)
 		return;
 
 	stack = calloc(heap->size, sizeof(binary_tree_node_t *));
@@ -15,7 +15,8 @@ heap_delete(heap_t *heap, free_data_t free_data)
 	if (!stack)
 		return;
 
-	stack[++top] = heap->root;
+	if (heap->root)
+		stack[++top] = heap->root;
 
 	while (top > -1)
 	{
@@ -32,6 +33,10 @@ heap_delete(heap_t *heap, free_data_t free_data)
 
 		free(pos);
 	}
+
+	heap->root = NULL;
+	heap->size = 0;
+	heap->data_cmp = NULL;
 
 	free(stack);
 	free(heap);
