@@ -11,7 +11,7 @@
 int
 huffman_extract_and_insert(heap_t *priority_queue)
 {
-	binary_tree_node_t *left = NULL, *right = NULL, *parent = NULL;
+	binary_tree_node_t *left = NULL, *right = NULL, *sum_node = NULL;
 
 	if (!priority_queue)
 		return (0);
@@ -22,12 +22,12 @@ huffman_extract_and_insert(heap_t *priority_queue)
 	if (!left || !right)
 		return (0);
 
-	parent = create_sum_node(left, right);
+	sum_node = create_sum_node(left, right);
 
-	if (!parent)
+	if (!sum_node)
 		return (0);
 
-	return (heap_insert(priority_queue, parent) ? 1 : 0);
+	return (heap_insert(priority_queue, sum_node) ? 1 : 0);
 }
 
 /**
@@ -58,6 +58,8 @@ binary_tree_node_t
 	if (!node)
 		goto on_failure;
 
+	left->parent = node;
+	right->parent = node;
 	node->left = left;
 	node->right = right;
 	return (node);

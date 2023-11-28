@@ -101,9 +101,27 @@ cmp_nested_nodes(void *a, void *b)
 void
 free_nested_node(void *node)
 {
+	binary_tree_node_t *node_ = NULL;
+
 	if (!node)
 		return;
 
-	free(((binary_tree_node_t *)node)->data); /* symbol data */
-	free(node);
+	node_ = (binary_tree_node_t *)node;
+
+	/* sum nodes will have children */
+
+	if (node_->left)
+	{
+		free(node_->left->data); /* symbol data */
+		free(node_->left);
+	}
+
+	if (node_->right)
+	{
+		free(node_->right->data); /* symbol data */
+		free(node_->right);
+	}
+
+	free(node_->data); /* symbol data */
+	free(node_);
 }
