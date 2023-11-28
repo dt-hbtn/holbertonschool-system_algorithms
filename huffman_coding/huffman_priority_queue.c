@@ -1,15 +1,6 @@
 #include <stdlib.h>
 #include "huffman.h"
 
-static binary_tree_node_t
-*create_nested_node(char data, size_t freq);
-
-static int
-cmp_nested_nodes(void *a, void *b);
-
-static void
-free_nested_node(void *node);
-
 /**
  * huffman_priority_queue - Creates Huffman priority queue from chars/freqs
  *
@@ -36,7 +27,7 @@ heap_t
 
 	for (i = 0; i < size; ++i)
 	{
-		nested_data = create_nested_node(data[i], freq[i]);
+		nested_data = nested_leaf_node(data[i], freq[i]);
 
 		if (!nested_data || !heap_insert(heap, nested_data))
 		{
@@ -48,8 +39,16 @@ heap_t
 	return (heap);
 }
 
-static binary_tree_node_t
-*create_nested_node(char data, size_t freq)
+/**
+ * nested_leaf_node - Creates nested binary-tree node containing symbol info
+ *
+ * @data: Character
+ * @freq: Frequency of character in text
+ *
+ * Return: Pointer to allocated nested node
+ */
+binary_tree_node_t
+*nested_leaf_node(char data, size_t freq)
 {
 	binary_tree_node_t *nested_node = NULL;
 	symbol_t *symbol = NULL;
@@ -72,7 +71,15 @@ on_failure:
 	return (NULL);
 }
 
-static int
+/**
+ * cmp_nested_nodes - Comparator for nested nodes
+ *
+ * @a: Pointer to first node
+ * @b: Pointer to second node
+ *
+ * Return: 0 if equal, <0 if less-than, >0 if greater-than
+ */
+int
 cmp_nested_nodes(void *a, void *b)
 {
 	binary_tree_node_t *node_a, *node_b;
@@ -86,7 +93,12 @@ cmp_nested_nodes(void *a, void *b)
 	return ((int)(freq_a - freq_b));
 }
 
-static void
+/**
+ * free_nested_node - Frees node and symbol data
+ *
+ * @node: Pointer to node
+ */
+void
 free_nested_node(void *node)
 {
 	if (!node)

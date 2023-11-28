@@ -22,4 +22,21 @@ symbol_t
 heap_t
 *huffman_priority_queue(char *data, size_t *freq, size_t size);
 
+int
+huffman_extract_and_insert(heap_t *priority_queue);
+
+/* Helper functions */
+
+binary_tree_node_t
+*nested_leaf_node(char data, size_t freq);
+
+binary_tree_node_t
+*create_sum_node(binary_tree_node_t *left, binary_tree_node_t *right);
+
+int
+cmp_nested_nodes(void *a, void *b);
+
+void
+free_nested_node(void *node);
+
 #endif /* SYSTEMALGORITHMS_HUFFMANCODING_HUFFMAN_H */
