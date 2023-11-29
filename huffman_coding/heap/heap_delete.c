@@ -1,8 +1,13 @@
 #include <stdlib.h>
 #include "heap.h"
 
-void
-heap_delete(heap_t *heap, free_data_t free_data)
+/**
+ * heap_delete - Frees resources held by heap_t structure
+ *
+ * @heap: Pointer to heap structure
+ * @free_data: Optional function to free `data` members on nodes
+ */
+void heap_delete(heap_t *heap, free_data_t free_data)
 {
 	binary_tree_node_t **stack = NULL, *pos = NULL;
 	long top = -1;

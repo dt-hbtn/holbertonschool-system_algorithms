@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "huffman.h"
+#include "_huffman.h"
 
 /**
  * huffman_priority_queue - Creates Huffman priority queue from chars/freqs
@@ -10,8 +10,7 @@
  *
  * Return: Pointer to created Huffman priority queue, NULL on failure
  */
-heap_t
-*huffman_priority_queue(char *data, size_t *freq, size_t size)
+heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size)
 {
 	heap_t *heap = NULL;
 	binary_tree_node_t *nested_data = NULL;
@@ -47,8 +46,7 @@ heap_t
  *
  * Return: Pointer to allocated nested node
  */
-binary_tree_node_t
-*nested_leaf_node(char data, size_t freq)
+binary_tree_node_t *nested_leaf_node(char data, size_t freq)
 {
 	binary_tree_node_t *nested_node = NULL;
 	symbol_t *symbol = NULL;
@@ -79,8 +77,7 @@ on_failure:
  *
  * Return: 0: a == b, negative: a < b, positive: a > b
  */
-int
-cmp_nested_nodes(void *a, void *b)
+int cmp_nested_nodes(void *a, void *b)
 {
 	binary_tree_node_t *node_a, *node_b;
 	long freq_a, freq_b;
@@ -98,8 +95,7 @@ cmp_nested_nodes(void *a, void *b)
  *
  * @node: Pointer to node
  */
-void
-free_nested_node(void *node)
+void free_nested_node(void *node)
 {
 	binary_tree_node_t *node_ = NULL;
 

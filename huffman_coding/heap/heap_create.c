@@ -8,8 +8,7 @@
  *
  * Return: Pointer to allocated heap structure
  */
-heap_t
-*heap_create(data_cmp_t data_cmp)
+heap_t *heap_create(data_cmp_t data_cmp)
 {
 	heap_t *heap = NULL;
 

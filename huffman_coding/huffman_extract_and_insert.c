@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "huffman.h"
+#include "_huffman.h"
 
 /**
  * huffman_extract_and_insert - Extracts two nodes and inserts their sum node
@@ -8,8 +8,7 @@
  *
  * Return: 1 on success, 0 on failure
  */
-int
-huffman_extract_and_insert(heap_t *priority_queue)
+int huffman_extract_and_insert(heap_t *priority_queue)
 {
 	binary_tree_node_t *left = NULL, *right = NULL, *sum_node = NULL;
 
@@ -38,8 +37,8 @@ huffman_extract_and_insert(heap_t *priority_queue)
  *
  * Return: Pointer to created sum node
  */
-binary_tree_node_t
-*create_sum_node(binary_tree_node_t *left, binary_tree_node_t *right)
+binary_tree_node_t *create_sum_node(binary_tree_node_t *left,
+	binary_tree_node_t *right)
 {
 	binary_tree_node_t *node = NULL;
 	symbol_t *symbol = NULL;

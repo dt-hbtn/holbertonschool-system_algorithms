@@ -36,19 +36,14 @@ typedef struct heap_s
 	binary_tree_node_t *root;
 } heap_t;
 
-heap_t
-*heap_create(data_cmp_t data_cmp);
+heap_t *heap_create(data_cmp_t data_cmp);
 
-binary_tree_node_t
-*binary_tree_node(binary_tree_node_t *parent, void *data);
+binary_tree_node_t *binary_tree_node(binary_tree_node_t *parent, void *data);
 
-binary_tree_node_t
-*heap_insert(heap_t *heap, void *data);
+binary_tree_node_t *heap_insert(heap_t *heap, void *data);
 
-void
-*heap_extract(heap_t *heap);
+void *heap_extract(heap_t *heap);
 
-void
-heap_delete(heap_t *heap, free_data_t free_data);
+void heap_delete(heap_t *heap, free_data_t free_data);
 
 #endif /* SYSTEMALGORITHMS_HUFFMANCODING_HEAP_H */

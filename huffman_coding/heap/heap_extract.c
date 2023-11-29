@@ -1,14 +1,12 @@
 #include <stdlib.h>
 #include "heap.h"
 
-static binary_tree_node_t
-*get_last_node(const heap_t *heap);
+static binary_tree_node_t *get_last_node(const heap_t *heap);
 
-static binary_tree_node_t
-*min_child(const heap_t *heap, const binary_tree_node_t *node);
+static binary_tree_node_t *min_child(const heap_t *heap,
+	const binary_tree_node_t *node);
 
-static void
-heapify_down(heap_t *heap);
+static void heapify_down(heap_t *heap);
 
 /**
  * heap_extract - Extract from heap
@@ -17,8 +15,7 @@ heapify_down(heap_t *heap);
  *
  * Return: Extracted data pointer
  */
-void
-*heap_extract(heap_t *heap)
+void *heap_extract(heap_t *heap)
 {
 	void *result = NULL;
 	binary_tree_node_t *last_node = NULL;
@@ -58,8 +55,14 @@ void
 	return (result);
 }
 
-static binary_tree_node_t
-*get_last_node(const heap_t *heap)
+/**
+ * get_last_node - Retrieves pointer to the heap's current last node
+ *
+ * @heap: Pointer to heap structure
+ *
+ * Return: Pointer to last node in heap
+ */
+static binary_tree_node_t *get_last_node(const heap_t *heap)
 {
 	binary_tree_node_t *pos = NULL;
 	size_t mask;
@@ -85,8 +88,16 @@ static binary_tree_node_t
 	return (pos);
 }
 
-static binary_tree_node_t
-*min_child(const heap_t *heap, const binary_tree_node_t *node)
+/**
+ * min_child - Retrieves pointer to child with the lesser value
+ *
+ * @heap: Pointer to heap structure
+ * @node: Node to retrieve min child from
+ *
+ * Return: Pointer to child with lesser value, NULL if `node` is a leaf
+*/
+static binary_tree_node_t *min_child(const heap_t *heap,
+	const binary_tree_node_t *node)
 {
 	int cmp;
 
@@ -100,8 +111,12 @@ static binary_tree_node_t
 	return (node->left ? node->left : node->right);
 }
 
-static void
-heapify_down(heap_t *heap)
+/**
+ * heapify_down - Restores heap post-extraction
+ *
+ * @heap: Pointer to heap structure
+ */
+static void heapify_down(heap_t *heap)
 {
 	binary_tree_node_t *parent = NULL, *child = NULL;
 	void *tmp_data = NULL;

@@ -16,47 +16,16 @@ typedef struct symbol_s
 	size_t freq;
 } symbol_t;
 
-/**
- * struct code_node_s - Stack node for tracking Huffman codes in tree
- *
- * @node: Pointer to tree node
- * @depth: Depth in tree
- * @path_flag: 0 if left child, 1 if right child
- */
-typedef struct code_node_s
-{
-	binary_tree_node_t *node;
-	signed depth : 31;
-	unsigned path_flag : 1;
-} code_node_t;
+/* Public functions */
 
-symbol_t
-*symbol_create(char data, size_t freq);
+symbol_t *symbol_create(char data, size_t freq);
 
-heap_t
-*huffman_priority_queue(char *data, size_t *freq, size_t size);
+heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size);
 
-int
-huffman_extract_and_insert(heap_t *priority_queue);
+int huffman_extract_and_insert(heap_t *priority_queue);
 
-binary_tree_node_t
-*huffman_tree(char *data, size_t *freq, size_t size);
+binary_tree_node_t *huffman_tree(char *data, size_t *freq, size_t size);
 
-int
-huffman_codes(char *data, size_t *freq, size_t size);
-
-/* Helper functions */
-
-binary_tree_node_t
-*nested_leaf_node(char data, size_t freq);
-
-binary_tree_node_t
-*create_sum_node(binary_tree_node_t *left, binary_tree_node_t *right);
-
-int
-cmp_nested_nodes(void *a, void *b);
-
-void
-free_nested_node(void *node);
+int huffman_codes(char *data, size_t *freq, size_t size);
 
 #endif /* SYSTEMALGORITHMS_HUFFMANCODING_HUFFMAN_H */

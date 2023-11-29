@@ -1,10 +1,7 @@
 #include "heap.h"
 
-static binary_tree_node_t
-*get_parent_of_new(const heap_t *heap);
-
-static binary_tree_node_t
-*heapify_up(heap_t *heap, binary_tree_node_t *node);
+static binary_tree_node_t *get_parent_of_new(const heap_t *heap);
+static binary_tree_node_t *heapify_up(heap_t *heap, binary_tree_node_t *node);
 
 /**
  * heap_insert - Inserts data into the heap
@@ -14,8 +11,7 @@ static binary_tree_node_t
  *
  * Return: Pointer to the inserted node
  */
-binary_tree_node_t
-*heap_insert(heap_t *heap, void *data)
+binary_tree_node_t *heap_insert(heap_t *heap, void *data)
 {
 	binary_tree_node_t *new_node = NULL, *parent = NULL;
 
@@ -49,8 +45,14 @@ binary_tree_node_t
 	return (heapify_up(heap, new_node));
 }
 
-static binary_tree_node_t
-*get_parent_of_new(const heap_t *heap)
+/**
+ * get_parent_of_new - Retrieves pointer to parent of insert position
+ *
+ * @heap: Pointer to heap structure
+ *
+ * Return: Pointer to parent of insert position
+ */
+static binary_tree_node_t *get_parent_of_new(const heap_t *heap)
 {
 	binary_tree_node_t *pos = NULL;
 	size_t new_size, mask;
@@ -78,8 +80,15 @@ static binary_tree_node_t
 	return (pos);
 }
 
-static binary_tree_node_t
-*heapify_up(heap_t *heap, binary_tree_node_t *node)
+/**
+ * heapify_up - Restores heap after insertion
+ *
+ * @heap: Pointer to heap structure
+ * @node: Pointer to inserted node
+ *
+ * Return: Pointer to the node that holds the inserted value post-heapify
+*/
+static binary_tree_node_t *heapify_up(heap_t *heap, binary_tree_node_t *node)
 {
 	binary_tree_node_t *parent = node->parent;
 	void *tmp_data = NULL;

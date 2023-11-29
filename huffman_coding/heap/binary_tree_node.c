@@ -9,8 +9,7 @@
  *
  * Return: Pointer to allocated node structure
  */
-binary_tree_node_t
-*binary_tree_node(binary_tree_node_t *parent, void *data)
+binary_tree_node_t *binary_tree_node(binary_tree_node_t *parent, void *data)
 {
 	binary_tree_node_t *node = NULL;
 
