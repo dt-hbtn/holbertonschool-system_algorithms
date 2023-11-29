@@ -115,7 +115,7 @@ void code_stack_pop(code_stack_t *stack, binary_tree_node_t **node,
 void traverse_codes(binary_tree_node_t *tree, code_stack_t *stack,
 	leaf_action_t leaf_action, void *args)
 {
-	char c, code_buf[256] = { '\0' };
+	char c, code_buf[512] = { '\0' };
 	binary_tree_node_t *pos = NULL;
 	int depth;
 	unsigned char path_flag;
