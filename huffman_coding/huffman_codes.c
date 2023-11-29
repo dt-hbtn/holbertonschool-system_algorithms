@@ -152,4 +152,10 @@ static void print_code(const char c, const char *code,
 	const int code_len, void *args)
 {
 	printf("%c: %.*s\n", c, code_len, code);
+
+	/* throw-away check to appease -Werror=unused-parameter */
+	if (args)
+	{
+		;
+	}
 }
