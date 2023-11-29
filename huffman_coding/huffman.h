@@ -26,8 +26,8 @@ typedef struct symbol_s
 typedef struct code_node_s
 {
 	binary_tree_node_t *node;
-	long depth : 63;
-	unsigned char path_flag : 1;
+	signed depth : 31;
+	unsigned path_flag : 1;
 } code_node_t;
 
 symbol_t
