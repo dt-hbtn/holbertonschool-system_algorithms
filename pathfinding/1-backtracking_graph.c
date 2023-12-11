@@ -73,7 +73,7 @@ const vertex_t *graph_backtrack_r(graph_backtrack_ctx_t *ctx,
 
 	if (vertex == ctx->target)
 	{
-		if (!queue_push_front(ctx->path, vertex->content))
+		if (!queue_push_front(ctx->path, strdup(vertex->content)))
 			return (NULL);
 
 		return (vertex);
