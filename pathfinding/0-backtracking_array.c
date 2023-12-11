@@ -126,6 +126,6 @@ static point_t *backtrack_r(backtracking_ctx_t *ctx, int x, int y)
 	if (ON_PATH_TO_TARGET(ctx, x, y))
 		return (path_push_front(ctx, x, y));
 
-	VISITED(ctx, x, y) = 0;
+	/* VISITED(ctx, x, y) = 0; */
 	return (NULL);
 }
