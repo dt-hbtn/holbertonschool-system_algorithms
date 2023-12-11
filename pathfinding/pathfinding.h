@@ -4,8 +4,6 @@
 #include "graphs.h"
 #include "queues.h"
 
-
-
 /**
  * struct point_s - Structure storing coordinates
  *
@@ -36,7 +34,28 @@ typedef struct backtracking_ctx_s
 	queue_t *path;
 } backtracking_ctx_t;
 
+/**
+ * struct graph_backtrack_ctx_s - Graph backtracking context data
+ *
+ * @graph: Pointer to graph_t structure
+ * @visited: Array to track visitation
+ * @target: Target vertex
+ * @path: Queue representing the path
+ */
+typedef struct graph_backtrack_ctx_s
+{
+	graph_t *graph;
+	unsigned char *visited;
+	const vertex_t *target;
+	queue_t *path;
+} graph_backtrack_ctx_t;
+
+/* TASK 0 */
 queue_t *backtracking_array(char **map, int rows, int cols,
 	point_t const *start, point_t const *target);
+
+/* TASK 1 */
+queue_t *backtracking_graph(graph_t *graph, vertex_t const *start,
+	vertex_t const *target);
 
 #endif /* SYSTEMALGORITHMS_PATHFINDING_H */
