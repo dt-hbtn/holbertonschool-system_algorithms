@@ -29,13 +29,26 @@
 	backtrack_r((ctx), (x), (y) - 1)\
 )
 
-static point_t *path_push_front(backtracking_ctx_t *ctx, int x, int y);
+/* STATIC FUNCTIONS */
 
+static point_t *backtrack_r(backtracking_ctx_t *ctx, int x, int y);
+static point_t *path_push_front(backtracking_ctx_t *ctx, int x, int y);
 static backtracking_ctx_t *backtracking_ctx_create(char **map, int rows,
 	int cols, const point_t *target);
 
-static point_t *backtrack_r(backtracking_ctx_t *ctx, int x, int y);
+/* API IMPLEMENTATION */
 
+/**
+ * backtracking_array - Returns a queue for a path found via backtracking
+ *
+ * @map: Pointer to 2D maze
+ * @rows: Number of rows in matrix
+ * @cols: Number of columns in matrix
+ * @start: Pointer to point_t for the start coordinates
+ * @target: Pointer to point_t for the target coordinates
+ *
+ * Return: Pointer to queue_t representing the path, NULL on failure
+ */
 queue_t *backtracking_array(char **map, int rows, int cols,
 	point_t const *start, point_t const *target)
 {
@@ -62,6 +75,44 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 	return (path);
 }
 
+/* STATIC FUNCTIONS */
+
+/**
+ * backtrack_r - Recursive backtracking function
+ *
+ * @ctx: Pointer to backtracking_ctx_t struct
+ * @x: Current X coordinate
+ * @y: Current Y coordinate
+ *
+ * Return: Pointer to point_t added to front of queue, NULL on failure
+ */
+static point_t *backtrack_r(backtracking_ctx_t *ctx, int x, int y)
+{
+	if (END_OF_THE_LINE(ctx, x, y))
+		return (NULL);
+
+	printf("Checking coordinates [%d, %d]\n", x, y);
+
+	if (TARGET_FOUND(ctx, x, y))
+		return (path_push_front(ctx, x, y));
+
+	VISITED(ctx, x, y) = 1;
+
+	if (ON_PATH_TO_TARGET(ctx, x, y))
+		return (path_push_front(ctx, x, y));
+
+	return (NULL);
+}
+
+/**
+ * path_push_front - Create point_t struct and put in front of queue
+ *
+ * @ctx: Pointer to backtracking_ctx_t struct
+ * @x: Current X coordinate
+ * @y: Current Y coordinate
+ *
+ * Return: Pointer to point_t added to front of queue, NULL on failure
+ */
 static point_t *path_push_front(backtracking_ctx_t *ctx, int x, int y)
 {
 	point_t *point = NULL;
@@ -83,6 +134,16 @@ static point_t *path_push_front(backtracking_ctx_t *ctx, int x, int y)
 	return (point);
 }
 
+/**
+ * backtracking_ctx_create - Allocate/initialize backtracking context
+ *
+ * @map: Pointer to 2D maze
+ * @rows: Number of rows in matrix
+ * @cols: Number of columns in matrix
+ * @target: Pointer to point_t for the target coordinates
+ *
+ * Return: Pointer to backtracking_ctx_t structure
+ */
 static backtracking_ctx_t *backtracking_ctx_create(char **map, int rows,
 	int cols, const point_t *target)
 {
@@ -109,23 +170,4 @@ static backtracking_ctx_t *backtracking_ctx_create(char **map, int rows,
 	ctx->target = target;
 	ctx->path = path;
 	return (ctx);
-}
-
-static point_t *backtrack_r(backtracking_ctx_t *ctx, int x, int y)
-{
-	if (END_OF_THE_LINE(ctx, x, y))
-		return (NULL);
-
-	printf("Checking coordinates [%d, %d]\n", x, y);
-
-	if (TARGET_FOUND(ctx, x, y))
-		return (path_push_front(ctx, x, y));
-
-	VISITED(ctx, x, y) = 1;
-
-	if (ON_PATH_TO_TARGET(ctx, x, y))
-		return (path_push_front(ctx, x, y));
-
-	/* VISITED(ctx, x, y) = 0; */
-	return (NULL);
 }
