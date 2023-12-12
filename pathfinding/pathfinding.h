@@ -50,12 +50,35 @@ typedef struct graph_backtrack_ctx_s
 	queue_t *path;
 } graph_backtrack_ctx_t;
 
+/**
+ * struct dijkstra_ctx_s - Dijkstra's-algorithm context data
+ *
+ * @graph: Pointer to graph data structure
+ * @visited: Array to track visitation
+ * @distances: Array to track distances
+ * @start: Pointer to start vertex
+ * @target: Pointer to target vertex
+ * @path: Queue representing the path
+ */
+typedef struct dijkstra_ctx_s
+{
+	graph_t *graph;
+	long *distances;
+	unsigned char *visited;
+	const vertex_t *start, *target;
+	queue_t *path;
+} dijkstra_ctx_t;
+
 /* TASK 0 */
 queue_t *backtracking_array(char **map, int rows, int cols,
 	point_t const *start, point_t const *target);
 
 /* TASK 1 */
 queue_t *backtracking_graph(graph_t *graph, vertex_t const *start,
+	vertex_t const *target);
+
+/* TASK 2 */
+queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 	vertex_t const *target);
 
 #endif /* SYSTEMALGORITHMS_PATHFINDING_H */
