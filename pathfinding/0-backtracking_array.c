@@ -8,7 +8,6 @@
 )
 
 #define VISITED(ctx, x, y) ((ctx)->visited[((y) * (ctx)->rows) + (x)])
-
 #define IS_ACCESSIBLE(ctx, x, y) ((ctx)->map[y][x] == '0')
 
 #define END_OF_THE_LINE(ctx, x, y) (\
@@ -31,9 +30,9 @@
 
 /* STATIC FUNCTIONS */
 
-static point_t *backtrack_r(backtracking_ctx_t *ctx, int x, int y);
-static point_t *path_push_front(backtracking_ctx_t *ctx, int x, int y);
-static backtracking_ctx_t *backtracking_ctx_create(char **map, int rows,
+static point_t *backtrack_r(array_backtrack_ctx_t *ctx, int x, int y);
+static point_t *path_push_front(array_backtrack_ctx_t *ctx, int x, int y);
+static array_backtrack_ctx_t *array_backtrack_ctx_create(char **map, int rows,
 	int cols, const point_t *target);
 
 /* API IMPLEMENTATION */
@@ -52,13 +51,13 @@ static backtracking_ctx_t *backtracking_ctx_create(char **map, int rows,
 queue_t *backtracking_array(char **map, int rows, int cols,
 	point_t const *start, point_t const *target)
 {
-	backtracking_ctx_t *ctx = NULL;
+	array_backtrack_ctx_t *ctx = NULL;
 	queue_t *path = NULL;
 
 	if (!map || !start || !target)
 		return (NULL);
 
-	ctx = backtracking_ctx_create(map, rows, cols, target);
+	ctx = array_backtrack_ctx_create(map, rows, cols, target);
 
 	if (!ctx)
 		return (NULL);
@@ -80,13 +79,13 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 /**
  * backtrack_r - Recursive backtracking function
  *
- * @ctx: Pointer to backtracking_ctx_t struct
+ * @ctx: Pointer to array_backtrack_ctx_t struct
  * @x: Current X coordinate
  * @y: Current Y coordinate
  *
  * Return: Pointer to point_t added to front of queue, NULL on failure
  */
-static point_t *backtrack_r(backtracking_ctx_t *ctx, int x, int y)
+static point_t *backtrack_r(array_backtrack_ctx_t *ctx, int x, int y)
 {
 	if (END_OF_THE_LINE(ctx, x, y))
 		return (NULL);
@@ -107,13 +106,13 @@ static point_t *backtrack_r(backtracking_ctx_t *ctx, int x, int y)
 /**
  * path_push_front - Create point_t struct and put in front of queue
  *
- * @ctx: Pointer to backtracking_ctx_t struct
+ * @ctx: Pointer to array_backtrack_ctx_t struct
  * @x: Current X coordinate
  * @y: Current Y coordinate
  *
  * Return: Pointer to point_t added to front of queue, NULL on failure
  */
-static point_t *path_push_front(backtracking_ctx_t *ctx, int x, int y)
+static point_t *path_push_front(array_backtrack_ctx_t *ctx, int x, int y)
 {
 	point_t *point = NULL;
 
@@ -135,19 +134,19 @@ static point_t *path_push_front(backtracking_ctx_t *ctx, int x, int y)
 }
 
 /**
- * backtracking_ctx_create - Allocate/initialize backtracking context
+ * array_backtrack_ctx_create - Allocate/initialize backtracking context
  *
  * @map: Pointer to 2D maze
  * @rows: Number of rows in matrix
  * @cols: Number of columns in matrix
  * @target: Pointer to point_t for the target coordinates
  *
- * Return: Pointer to backtracking_ctx_t structure
+ * Return: Pointer to array_backtrack_ctx_create structure
  */
-static backtracking_ctx_t *backtracking_ctx_create(char **map, int rows,
+static array_backtrack_ctx_t *array_backtrack_ctx_create(char **map, int rows,
 	int cols, const point_t *target)
 {
-	backtracking_ctx_t *ctx = NULL;
+	array_backtrack_ctx_t *ctx = NULL;
 	queue_t *path = NULL;
 
 	path = queue_create();
@@ -155,7 +154,7 @@ static backtracking_ctx_t *backtracking_ctx_create(char **map, int rows,
 	if (!path)
 		return (NULL);
 
-	ctx = calloc(1, sizeof(backtracking_ctx_t) + (size_t)(rows * cols));
+	ctx = calloc(1, sizeof(array_backtrack_ctx_t) + (size_t)(rows * cols));
 
 	if (!ctx)
 	{

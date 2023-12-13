@@ -16,7 +16,7 @@ typedef struct point_s
 } point_t;
 
 /**
- * struct backtracking_ctx_s - Backtracking context
+ * struct array_backtrack_ctx_s - Backtracking context
  *
  * @map: Maze grid
  * @visited: Array to track visitation
@@ -25,14 +25,14 @@ typedef struct point_s
  * @target: Target point
  * @path: Queue representing the path
  */
-typedef struct backtracking_ctx_s
+typedef struct array_backtrack_ctx_s
 {
 	char **map;
 	unsigned char *visited;
 	int rows, cols;
 	const point_t *target;
 	queue_t *path;
-} backtracking_ctx_t;
+} array_backtrack_ctx_t;
 
 /**
  * struct graph_backtrack_ctx_s - Graph backtracking context data
