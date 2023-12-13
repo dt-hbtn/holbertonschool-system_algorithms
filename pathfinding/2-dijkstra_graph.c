@@ -1,10 +1,12 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "pathfinding.h"
 
 #define VISITED(ctx, v) ((ctx)->visited[(v)->index])
-#define DISTANCE(ctx, v) ((ctx)->distances[(v)->index])
+#define DISTANCE(ctx, v) ((ctx)->distances[(v)->index].val)
+#define MIN_PREV(ctx, v) ((ctx)->distances[(v)->index].prev)
 #define LOG_VERTEX(ctx, v) printf(\
 	"Checking %s, distance from %s is %ld\n",\
 	(v)->content,\
@@ -38,6 +40,7 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 {
 	dijkstra_ctx_t *ctx = NULL;
 	queue_t *path = NULL;
+	const vertex_t *pos = NULL;
 
 	if (!graph || !start || !target)
 		return (NULL);
@@ -55,6 +58,17 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 	}
 
 	path = ctx->path;
+
+	for (pos = target; pos; pos = MIN_PREV(ctx, pos))
+	{
+		if (!queue_push_front(path, strdup(pos->content)))
+		{
+			queue_delete(ctx->path);
+			free(ctx);
+			return (NULL);
+		}
+	}
+
 	free(ctx);
 	return (path);
 }
@@ -73,7 +87,7 @@ static const vertex_t *dijkstra_path_r(dijkstra_ctx_t *ctx,
 	const vertex_t *vertex)
 {
 	edge_t *edge_pos = NULL;
-	long distance, min_distance;
+	long distance;
 
 	if (!vertex)
 		return (NULL);
@@ -81,7 +95,7 @@ static const vertex_t *dijkstra_path_r(dijkstra_ctx_t *ctx,
 	LOG_VERTEX(ctx, vertex);
 
 	if (vertex == ctx->target)
-		goto on_path;
+		return (vertex);
 
 	for (edge_pos = vertex->edges; edge_pos; edge_pos = edge_pos->next)
 	{
@@ -91,21 +105,18 @@ static const vertex_t *dijkstra_path_r(dijkstra_ctx_t *ctx,
 		distance = DISTANCE(ctx, vertex) + (long)edge_pos->weight;
 
 		if (distance < DISTANCE(ctx, edge_pos->dest))
+		{
 			DISTANCE(ctx, edge_pos->dest) = distance;
+			MIN_PREV(ctx, edge_pos->dest) = vertex;
+		}
 	}
 
 	VISITED(ctx, vertex) = 1;
 
 	if (dijkstra_path_r(ctx, min_unvisited(ctx)))
-		goto on_path;
+		return (vertex);
 
 	return (NULL);
-
-on_path:
-	if (!queue_push_front(ctx->path, strdup(vertex->content)))
-		return (NULL);
-
-	return (vertex);
 }
 
 /**
@@ -157,7 +168,7 @@ static dijkstra_ctx_t *dijkstra_ctx_create(graph_t *graph,
 		return (NULL);
 
 	alloc_size = sizeof(dijkstra_ctx_t);
-	alloc_size += graph->nb_vertices * (sizeof(long) + 1);
+	alloc_size += graph->nb_vertices * (sizeof(distance_t) + 1);
 	ctx = calloc(1, alloc_size);
 
 	if (!ctx)
@@ -167,12 +178,12 @@ static dijkstra_ctx_t *dijkstra_ctx_create(graph_t *graph,
 	}
 
 	ctx->graph = graph;
-	ctx->distances = (long *)(ctx + 1);
+	ctx->distances = (distance_t *)(ctx + 1);
 
 	for (i = 0; i < graph->nb_vertices; ++i)
-		ctx->distances[i] = LONG_MAX;
+		ctx->distances[i].val = LONG_MAX;
 
-	ctx->distances[start->index] = 0L;
+	ctx->distances[start->index].val = 0L;
 	ctx->visited = (unsigned char *)(ctx->distances + graph->nb_vertices);
 	ctx->start = start;
 	ctx->target = target;
