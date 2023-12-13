@@ -6,7 +6,8 @@
 
 #define VISITED(ctx, v) ((ctx)->visited[(v)->index])
 #define DISTANCE(ctx, v) ((ctx)->distances[(v)->index].val)
-#define MIN_PREV(ctx, v) ((ctx)->distances[(v)->index].prev)
+#define NEAREST_PREV(ctx, v) ((ctx)->distances[(v)->index].prev)
+
 #define LOG_VERTEX(ctx, v) printf(\
 	"Checking %s, distance from %s is %ld\n",\
 	(v)->content,\
@@ -16,8 +17,7 @@
 
 /* STATIC FUNCTIONS */
 
-static const vertex_t *dijkstra_path_r(dijkstra_ctx_t *ctx,
-	const vertex_t *vertex);
+static int populate_distances(dijkstra_ctx_t *ctx, const vertex_t *vertex);
 
 static const vertex_t *min_unvisited(dijkstra_ctx_t *ctx);
 
@@ -50,73 +50,66 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 	if (!ctx)
 		return (NULL);
 
-	if (!dijkstra_path_r(ctx, start))
-	{
-		queue_delete(ctx->path);
-		free(ctx);
-		return (NULL);
-	}
+	if (!populate_distances(ctx, start))
+		goto on_fail;
 
 	path = ctx->path;
 
-	for (pos = target; pos; pos = MIN_PREV(ctx, pos))
+	for (pos = target; pos; pos = NEAREST_PREV(ctx, pos))
 	{
 		if (!queue_push_front(path, strdup(pos->content)))
-		{
-			queue_delete(ctx->path);
-			free(ctx);
-			return (NULL);
-		}
+			goto on_fail;
 	}
 
 	free(ctx);
 	return (path);
+
+on_fail:
+	queue_delete(ctx->path);
+	free(ctx);
+	return (NULL);
 }
 
 /* STATIC FUNCTIONS */
 
 /**
- * dijkstra_path_r - Recursive path finder (Dijkstra's algorithm)
+ * populate_distances - Finds minimum distances to nodes from start to target
  *
  * @ctx: Pointer to context structure
- * @vertex: Pointer to current vertex
+ * @vertex: Pointer to start vertex
  *
- * Return: `vertex` pointer if added to path, otherwise NULL
+ * Return: 1 on success, 0 on failure
  */
-static const vertex_t *dijkstra_path_r(dijkstra_ctx_t *ctx,
-	const vertex_t *vertex)
+static int populate_distances(dijkstra_ctx_t *ctx, const vertex_t *vertex)
 {
-	edge_t *edge_pos = NULL;
+	edge_t *edge = NULL;
 	long distance;
 
-	if (!vertex)
-		return (NULL);
-
-	LOG_VERTEX(ctx, vertex);
-
-	if (vertex == ctx->target)
-		return (vertex);
-
-	for (edge_pos = vertex->edges; edge_pos; edge_pos = edge_pos->next)
+	for (; vertex; vertex = min_unvisited(ctx))
 	{
-		if (VISITED(ctx, edge_pos->dest))
-			continue;
+		LOG_VERTEX(ctx, vertex);
 
-		distance = DISTANCE(ctx, vertex) + (long)edge_pos->weight;
+		if (vertex == ctx->target)
+			return (1);
 
-		if (distance < DISTANCE(ctx, edge_pos->dest))
+		for (edge = vertex->edges; edge; edge = edge->next)
 		{
-			DISTANCE(ctx, edge_pos->dest) = distance;
-			MIN_PREV(ctx, edge_pos->dest) = vertex;
+			if (VISITED(ctx, edge->dest))
+				continue;
+
+			distance = DISTANCE(ctx, vertex) + (long)edge->weight;
+
+			if (distance < DISTANCE(ctx, edge->dest))
+			{
+				DISTANCE(ctx, edge->dest) = distance;
+				NEAREST_PREV(ctx, edge->dest) = vertex;
+			}
 		}
+
+		VISITED(ctx, vertex) = 1;
 	}
 
-	VISITED(ctx, vertex) = 1;
-
-	if (dijkstra_path_r(ctx, min_unvisited(ctx)))
-		return (vertex);
-
-	return (NULL);
+	return (0);
 }
 
 /**
