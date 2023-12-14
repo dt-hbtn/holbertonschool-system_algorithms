@@ -55,13 +55,13 @@ typedef struct graph_backtrack_ctx_s
  *
  * @prev: Pointer to previous vertex leading to current vertex's min distance
  * @distance: Min distance of vertex from start (31 bits, unsigned)
- * @in_queue: Bit flag indicating if the vertex is in the priority queue
+ * @frontier: Bit flag indicating if the vertex is in the priority queue
  */
 typedef struct dijkstra_entry_s
 {
 	const vertex_t *prev;
 	unsigned distance : 31;
-	unsigned in_queue : 1;
+	unsigned frontier : 1;
 } dijkstra_entry_t;
 
 /**

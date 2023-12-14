@@ -1,11 +1,10 @@
-#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "pathfinding.h"
 
-#define INFINITY (UINT_MAX >> 1) /* max for 31-bit unsigned */
-#define IN_QUEUE(ctx, v) ((ctx)->entries[(v)->index].in_queue)
+#define INFINITY (~0u >> 1) /* max value for unsigned 31-bit integer */
+#define FRONTIER(ctx, v) ((ctx)->entries[(v)->index].frontier)
 #define DISTANCE(ctx, v) ((ctx)->entries[(v)->index].distance)
 #define NEAREST_PREV(ctx, v) ((ctx)->entries[(v)->index].prev)
 #define HEAP_LEFT(i) (((i) << 1) + 1)
@@ -114,7 +113,7 @@ static int populate_distances(dijkstra_ctx_t *ctx)
 				DISTANCE(ctx, edge->dest) = dist;
 				NEAREST_PREV(ctx, edge->dest) = pos;
 
-				if (!IN_QUEUE(ctx, edge->dest))
+				if (!FRONTIER(ctx, edge->dest))
 					pq_insert(ctx, edge->dest);
 			}
 		}
@@ -158,7 +157,7 @@ static const vertex_t *pq_insert(dijkstra_ctx_t *ctx, const vertex_t *vertex)
 		i = j;
 	}
 
-	IN_QUEUE(ctx, vertex) = 1;
+	FRONTIER(ctx, vertex) = 1;
 	return (vertex);
 }
 
@@ -206,7 +205,7 @@ static const vertex_t *pq_extract(dijkstra_ctx_t *ctx)
 		ctx->pq[j] = tmp1;
 	}
 
-	IN_QUEUE(ctx, root) = 0;
+	FRONTIER(ctx, root) = 0;
 	return (root);
 }
 
