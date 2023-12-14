@@ -8,7 +8,7 @@
 #define DISTANCE(ctx, v) ((ctx)->entries[(v)->index].distance)
 #define NEAREST_PREV(ctx, v) ((ctx)->entries[(v)->index].prev)
 #define HEAP_LEFT(i) (((i) << 1) + 1)
-#define HEAP_RIGHT(i) (((i) << 1) + 1)
+#define HEAP_RIGHT(i) (((i) << 1) + 2)
 #define HEAP_PARENT(i) (((i) - 1) >> 1)
 
 #define LOG_VERTEX(ctx, v) printf(\
