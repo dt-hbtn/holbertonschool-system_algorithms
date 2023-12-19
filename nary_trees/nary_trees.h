@@ -36,6 +36,6 @@ size_t nary_tree_traverse(const nary_tree_t *root, action_t action);
 size_t nary_tree_diameter(const nary_tree_t *root);
 
 /* TASK 4 */
-int path_exists(const nary_tree_t *root, const char * const path);
+int path_exists(const nary_tree_t *root, const char * const *path);
 
 #endif /* SYSTEMALGORITHMS_NARYTREES_H */
