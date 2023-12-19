@@ -18,7 +18,12 @@ static void
 rotate_family(rb_tree_t **root, rb_tree_t *node, rb_node_family *family);
 
 /**
- * 
+ * rb_tree_insert - Inserts node into red-black tree and rebalances
+ *
+ * @tree: Double pointer root red-black-tree structure
+ * @value: Key for node
+ *
+ * Return: Pointer to the newly inserted node
  */
 rb_tree_t
 *rb_tree_insert(rb_tree_t **tree, int value)
@@ -41,7 +46,9 @@ static rb_tree_t
 {
 	rb_tree_t *pos = NULL, *new_node = NULL;
 
-	if (!(pos = *root))
+	pos = *root;
+
+	if (!pos)
 	{
 		*root = rb_tree_node(NULL, value, BLACK);
 		return (*root);
