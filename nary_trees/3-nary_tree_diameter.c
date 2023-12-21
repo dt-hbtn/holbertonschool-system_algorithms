@@ -1,5 +1,31 @@
 #include "nary_trees.h"
 
+#define GOLD(a) ((a)[0])
+#define SILVER(a) ((a)[1])
+
+#define UPDATE_MAX_DIAMETER(n, a, v)		\
+	do {					\
+		(v) = nary_tree_diameter((n));	\
+		if ((v) > GOLD(a))		\
+			GOLD(a) = (v);		\
+	} while (0)
+
+#define UPDATE_MAX_HEIGHTS(n, a, v)		\
+	do {					\
+		(v) = nary_tree_height((n));	\
+		if ((v) > GOLD(a))		\
+		{				\
+			SILVER(a) = GOLD(a);	\
+			GOLD(a) = (v);		\
+		}				\
+		else if ((v) > SILVER(a))	\
+		{				\
+			SILVER(a) = (v);	\
+		}				\
+	} while (0)
+
+#define MAX_PATH(a) (GOLD(a) + SILVER(a) + 1)
+
 static size_t nary_tree_height(const nary_tree_t *node);
 
 /**
@@ -11,37 +37,22 @@ static size_t nary_tree_height(const nary_tree_t *node);
  */
 size_t nary_tree_diameter(const nary_tree_t *root)
 {
-	size_t max1 = 0UL, max2 = 0UL, max_diam = 0UL, tmp;
+	size_t maxes[2] = { 0UL, 0UL }, max_path, current;
 	const nary_tree_t *child = NULL;
 
 	if (!root)
 		return (0UL);
 
 	for (child = root->children; child; child = child->next)
-	{
-		tmp = nary_tree_height(child);
+		UPDATE_MAX_HEIGHTS(child, maxes, current);
 
-		if (tmp > max1)
-		{
-			max2 = max1;
-			max1 = tmp;
-		}
-		else if (tmp > max2)
-		{
-			max2 = tmp;
-		}
-	}
+	max_path = MAX_PATH(maxes);
+	GOLD(maxes) = 0UL;
 
 	for (child = root->children; child; child = child->next)
-	{
-		tmp = nary_tree_diameter(child);
+		UPDATE_MAX_DIAMETER(child, maxes, current);
 
-		if (tmp > max_diam)
-			max_diam = tmp;
-	}
-
-	tmp = max1 + max2 + 1;
-	return (tmp > max_diam ? tmp : max_diam);
+	return (max_path > GOLD(maxes) ? max_path : GOLD(maxes));
 }
 
 /**
@@ -53,15 +64,15 @@ size_t nary_tree_diameter(const nary_tree_t *root)
  */
 static size_t nary_tree_height(const nary_tree_t *node)
 {
-	size_t height = 0, tmp;
+	size_t max_height = 0, child_height;
 
 	for (node = node->children; node; node = node->next)
 	{
-		tmp = nary_tree_height(node);
+		child_height = nary_tree_height(node);
 
-		if (tmp > height)
-			height = tmp;
+		if (child_height > max_height)
+			max_height = child_height;
 	}
 
-	return (height + 1);
+	return (max_height + 1);
 }
