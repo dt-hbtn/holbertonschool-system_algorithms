@@ -1,8 +1,7 @@
 #include <string.h>
 #include "nary_trees.h"
 
-static const nary_tree_t *find_sibling(const nary_tree_t *node,
-	const char *content);
+#define CONTENT_MATCHES(n, c) (!strcmp((n)->content, (c)))
 
 /**
  * path_exists - Checks n-ary tree for path
@@ -12,7 +11,6 @@ static const nary_tree_t *find_sibling(const nary_tree_t *node,
  *
  * Return: 1: path found, 0: path not found
  */
-
 int path_exists(const nary_tree_t *root, const char * const *path)
 {
 	if (!root || !path)
@@ -20,23 +18,18 @@ int path_exists(const nary_tree_t *root, const char * const *path)
 
 	for (; *path; ++path)
 	{
-		root = find_sibling(root, *path);
+		/* search current level for path component */
+		for (; root; root = root->next)
+			if (CONTENT_MATCHES(root, *path))
+				break;
 
+		/* current path component not found */
 		if (!root)
 			return (0);
 
+		/* move to next level */
 		root = root->children;
 	}
 
-	return (1);
-}
-
-static const nary_tree_t *find_sibling(const nary_tree_t *node,
-	const char *content)
-{
-	for (; node; node = node->next)
-		if (!strcmp(node->content, content))
-			return (node);
-
-	return (NULL);
+	return (1); /* all path items found in correct order */
 }
